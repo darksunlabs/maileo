@@ -1,0 +1,5 @@
+[main]
+to: address = aleo1ezamst4pjgj9zfxqq0fwfj8a4cjuqndmasgata3hggzqygggnyfq6kmyd4;
+hash: field = 5113762728field;
+phrase: field = 3030123984field;
+now: u64 = 11111111u64
