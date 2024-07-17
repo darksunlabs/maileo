@@ -1,5 +1,6 @@
 program mail_nm03.aleo {
-    struct MailBlock {
+    
+   struct MailBlock {
         add: address,
         sno: u64,
 
@@ -10,6 +11,7 @@ program mail_nm03.aleo {
         a1: u32,
         a2: u32,
         a3: u32,
+        key: field,
         hash: field,
     }
 
@@ -20,7 +22,6 @@ program mail_nm03.aleo {
     mapping sent_count: address => u64;
     mapping received_count: address => u64;
     mapping timestamps: field => u64;
-    mapping masks: field => field;
 
 
     
@@ -29,25 +30,30 @@ program mail_nm03.aleo {
 
     async transition send_mail(to: address, hash: field, phrase: field, now: u64) -> (algos, algos, Future) {
         let from: address = self.caller;
+        let a: u64 = now % 3u64;
+        let b: u64 = (now/10u64) % 3u64;
+        let c: u64 = (now/100u64) % 3u64;
         let new: algos = algos {
             owner: to,
-            a1: 1u32,
-            a2: 2u32, 
-            a3: 1u32,
+            a1: a as u32,
+            a2: b as u32, 
+            a3: c as u32,
+            key: phrase,
             hash: hash,
         };
         let new2: algos = algos {
             owner: from,
-            a1: 2u32,
-            a2: 1u32, 
-            a3: 1u32,
+            a1: a as u32,
+            a2: b as u32, 
+            a3: c as u32,
+            key: phrase,
             hash: hash,
         };
 
-        return (new, new2, send_mail_final(to, from, hash, phrase, now));
+        return (new, new2, send_mail_final(to, from, hash, now));
     }
 
-    async function send_mail_final(to: address, from: address, hash: field, phrase: field, now: u64) {
+    async function send_mail_final(to: address, from: address, hash: field, now: u64) {
         assert(Mapping::get_or_use(timestamps, hash, 0_u64) == 0_u64);
         
         let rec_no: u64 = Mapping::get_or_use(received_count, to, 0u64) + 1_u64;
@@ -61,18 +67,11 @@ program mail_nm03.aleo {
         Mapping::set(sent_count, from, sent_no);
         Mapping::set(received_count, to, rec_no);
 
-        let gen: u32 = ChaCha::rand_u32();
-        let gen2: u32 = phrase as u32;
-        let a: u32 = gen % 3_u32;
-        let b: u32 = (gen/10_u32) % 3_u32;
-        let c: u32 = (gen2) % 3_u32;
-        let mask: field = (gen as field).square_root() + (gen2 as field).square_root();
         
 
-        Mapping::set(masks, hash, mask);
 
-
-    }
+        }
+    
 }
 
 
