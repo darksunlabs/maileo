@@ -11,7 +11,7 @@ program mail_nm03.aleo {
         a1: u32,
         a2: u32,
         a3: u32,
-        key: field,
+        k: field,
         hash: field,
     }
 
@@ -38,7 +38,7 @@ program mail_nm03.aleo {
             a1: a as u32,
             a2: b as u32, 
             a3: c as u32,
-            key: phrase,
+            k: phrase,
             hash: hash,
         };
         let new2: algos = algos {
@@ -46,7 +46,7 @@ program mail_nm03.aleo {
             a1: a as u32,
             a2: b as u32, 
             a3: c as u32,
-            key: phrase,
+            k: phrase,
             hash: hash,
         };
 
