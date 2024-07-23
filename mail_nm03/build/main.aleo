@@ -1,22 +1,25 @@
-program mail_nm02.aleo;
+program mail_nm03.aleo;
 
-struct Mailer:
+struct MailBlock:
     add as address;
     sno as u64;
 
-struct Algos:
-    a1 as u32;
-    a2 as u32;
-    a3 as u32;
+record algos:
+    owner as address.private;
+    a1 as u32.private;
+    a2 as u32.private;
+    a3 as u32.private;
+    k as field.private;
+    hash as field.private;
 
 
 mapping sent:
-	key as Mailer.public;
+	key as MailBlock.public;
 	value as field.public;
 
 
 mapping received:
-	key as Mailer.public;
+	key as MailBlock.public;
 	value as field.public;
 
 
@@ -35,55 +38,46 @@ mapping timestamps:
 	value as u64.public;
 
 
-mapping algos:
-	key as field.public;
-	value as Algos.public;
-
-
-mapping masks:
-	key as field.public;
-	value as field.public;
-
 function send_mail:
     input r0 as address.private;
     input r1 as field.private;
     input r2 as field.private;
     input r3 as u64.private;
-    async send_mail r0 self.caller r1 r2 r3 into r4;
-    output true as boolean.private;
-    output r4 as mail_nm02.aleo/send_mail.future;
+    rem r3 3u64 into r4;
+    div r3 10u64 into r5;
+    rem r5 3u64 into r6;
+    div r3 100u64 into r7;
+    rem r7 3u64 into r8;
+    cast r4 into r9 as u32;
+    cast r6 into r10 as u32;
+    cast r8 into r11 as u32;
+    cast r0 r9 r10 r11 r2 r1 into r12 as algos.record;
+    cast r4 into r13 as u32;
+    cast r6 into r14 as u32;
+    cast r8 into r15 as u32;
+    cast self.caller r13 r14 r15 r2 r1 into r16 as algos.record;
+    async send_mail r0 self.caller r1 r3 into r17;
+    output r12 as algos.record;
+    output r16 as algos.record;
+    output r17 as mail_nm03.aleo/send_mail.future;
 
 finalize send_mail:
     input r0 as address.public;
     input r1 as address.public;
     input r2 as field.public;
-    input r3 as field.public;
-    input r4 as u64.public;
-    get.or_use timestamps[r2] 0_u64 into r5;
-    is.eq r5 0_u64 into r6;
-    assert.eq r6 true;
-    get.or_use received_count[r0] 0u64 into r7;
-    add r7 1_u64 into r8;
-    get.or_use sent_count[r1] 0u64 into r9;
-    add r9 1_u64 into r10;
-    cast r0 r8 into r11 as Mailer;
-    set r2 into received[r11];
-    cast r1 r10 into r12 as Mailer;
-    set r2 into sent[r12];
-    set r4 into timestamps[r2];
-    set r10 into sent_count[r1];
-    set r8 into received_count[r0];
-    rand.chacha into r13 as u32;
-    cast r3 into r14 as u32;
-    rem r13 3_u32 into r15;
-    div r13 10_u32 into r16;
-    rem r16 3_u32 into r17;
-    rem r14 3_u32 into r18;
-    cast r13 into r19 as field;
-    sqrt r19 into r20;
-    cast r14 into r21 as field;
-    sqrt r21 into r22;
-    add r20 r22 into r23;
-    cast r15 r17 r18 into r24 as Algos;
-    set r24 into algos[r2];
-    set r23 into masks[r2];
+    input r3 as u64.public;
+    get.or_use timestamps[r2] 0_u64 into r4;
+    is.eq r4 0_u64 into r5;
+    assert.eq r5 true;
+    get.or_use received_count[r0] 0u64 into r6;
+    add r6 1_u64 into r7;
+    get.or_use sent_count[r1] 0u64 into r8;
+    add r8 1_u64 into r9;
+    cast r0 r7 into r10 as MailBlock;
+    set r2 into received[r10];
+    cast r1 r9 into r11 as MailBlock;
+    set r2 into sent[r11];
+    set r3 into timestamps[r2];
+    set r9 into sent_count[r1];
+    set r7 into received_count[r0];
+
